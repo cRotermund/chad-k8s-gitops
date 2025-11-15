@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: infrastructure
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: Infrastructure components for the Kubernetes cluster
+  
+  # Source repositories that applications in this project can pull from
+  sourceRepos:
+    - '*'  # Allow all repos - you can restrict this to specific repos for security
+  
+  # Destinations where applications can be deployed
+  destinations:
+    - namespace: '*'
+      server: https://kubernetes.default.svc
+  
+  # Cluster resource whitelist - what cluster-scoped resources can be deployed
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  
+  # Namespace resource whitelist
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  
+  # Sync windows - optional time windows when sync is allowed
+  # syncWindows:
+  #   - kind: allow
+  #     schedule: '0 0 * * *'
+  #     duration: 1h
+  #     applications:
+  #       - '*'

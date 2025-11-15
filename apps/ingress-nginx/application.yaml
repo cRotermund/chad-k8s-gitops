@@ -1,0 +1,64 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ingress-nginx
+  namespace: argocd
+  # Finalizer ensures proper cleanup when deleting the application
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  # Project that this application belongs to
+  project: infrastructure
+  
+  # Source: Where to find the Kubernetes manifests
+  source:
+    # Using the official ingress-nginx Helm chart
+    repoURL: https://kubernetes.github.io/ingress-nginx
+    chart: ingress-nginx
+    targetRevision: 4.11.3
+    helm:
+      # Custom values to configure ingress-nginx
+      values: |
+        controller:
+          # Enable metrics for Prometheus scraping
+          metrics:
+            enabled: true
+            serviceMonitor:
+              enabled: true
+              additionalLabels:
+                release: kube-prometheus-stack
+          
+          # Resource limits to prevent runaway consumption
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          
+          # Admission webhooks for validating Ingress resources
+          admissionWebhooks:
+            enabled: true
+  
+  # Destination: Where to deploy in the cluster
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ingress-nginx
+  
+  # Sync policy: How ArgoCD should handle syncing
+  syncPolicy:
+    automated:
+      # Automatically sync when Git changes
+      prune: true        # Delete resources that are removed from Git
+      selfHeal: true     # Automatically fix drift if someone manually changes the cluster
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true  # Automatically create the namespace if it doesn't exist
+      - ServerSideApply=true  # Use server-side apply for better resource management
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m

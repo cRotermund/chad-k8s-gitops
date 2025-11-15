@@ -1,0 +1,39 @@
+# .gitignore for Kubernetes GitOps Repository
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Secrets (never commit these!)
+secrets/
+*.secret
+*.key
+*.pem
+*.crt
+
+# Local environment files
+.env
+.env.local
+
+# Helm temporary files
+*.tgz
+charts/*/charts/
+
+# Terraform state (if you use Terraform)
+*.tfstate
+*.tfstate.*
+.terraform/
+
+# Test outputs
+test-output/
