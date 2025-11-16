@@ -96,7 +96,28 @@ kubectl port-forward svc/argocd-server -n argocd 8080:443
 # Password: (from command above)
 ```
 
-### Step 2: Connect This Repository to ArgoCD
+### Step 2: SSH to Your Cluster Host
+
+If you don't have `kubectl` configured locally, SSH to a machine that has cluster access:
+
+```bash
+# SSH to your cluster host
+ssh user@your-cluster-host
+
+# Clone this repository
+git clone https://github.com/cRotermund/chad-k8s-gitops.git
+cd chad-k8s-gitops
+
+# Verify kubectl access
+kubectl get nodes
+```
+
+**Note**: This keeps your admin kubeconfig secure on the cluster host. For day-to-day operations, you'll:
+1. Make changes locally and push to Git
+2. SSH to cluster host and `git pull`
+3. Let ArgoCD sync automatically (or manually trigger)
+
+### Step 3: Connect This Repository to ArgoCD
 
 **Option A: Using ArgoCD UI**
 1. Go to Settings → Repositories
@@ -121,7 +142,7 @@ stringData:
 EOF
 ```
 
-### Step 3: Deploy the Infrastructure Project
+### Step 4: Deploy the Infrastructure Project
 
 ```bash
 # Apply the infrastructure project
@@ -134,7 +155,7 @@ kubectl apply -f apps/loki/application.yaml
 kubectl apply -f apps/promtail/application.yaml
 ```
 
-### Step 4: Watch ArgoCD Deploy Everything
+### Step 5: Watch ArgoCD Deploy Everything
 
 ```bash
 # Watch applications sync
@@ -143,6 +164,22 @@ kubectl get applications -n argocd -w
 # Or use the ArgoCD CLI
 argocd app list
 argocd app get ingress-nginx
+```
+
+### Step 6: Access ArgoCD UI (Optional)
+
+If you want to manage ArgoCD through the UI from your local machine:
+
+```bash
+# On cluster host: Port-forward ArgoCD
+kubectl port-forward svc/argocd-server -n argocd 8080:443
+
+# On local machine: Create SSH tunnel
+ssh -L 8080:localhost:8080 user@your-cluster-host
+
+# Open browser: https://localhost:8080
+# Username: admin
+# Password: (from Step 1)
 ```
 
 ## 🔧 Customization
