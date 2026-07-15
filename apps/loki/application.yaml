@@ -10,9 +10,9 @@ spec:
   
   source:
     # Grafana Loki for log aggregation
-    repoURL: https://grafana.github.io/helm-charts
+    repoURL: https://grafana-community.github.io/helm-charts
     chart: loki
-    targetRevision: 6.16.0
+    targetRevision: 6.55.0
     helm:
       values: |
         # Deployment mode - single binary for simplicity

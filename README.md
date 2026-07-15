@@ -23,7 +23,7 @@ chad-k8s-gitops/
 ├── apps/                          # Application definitions
 │   ├── kube-prometheus-stack/    # Prometheus + Grafana monitoring
 │   ├── loki/                     # Log aggregation
-│   └── promtail/                 # Log collection agent
+│   └── alloy/                    # Log/metrics/trace collection agent
 ├── projects/                      # ArgoCD project definitions
 │   └── infrastructure.yaml
 └── README.md
@@ -51,10 +51,11 @@ chad-k8s-gitops/
 - **Namespace**: `monitoring`
 - **Integration**: Pre-configured as a Grafana datasource
 
-### 3. **Promtail** (Log Collection)
-- **What it does**: Runs on every node and sends logs to Loki
-- **How it works**: DaemonSet that reads container logs and forwards them
+### 3. **Grafana Alloy** (Log/Metrics/Trace Collection)
+- **What it does**: Runs on every node and collects logs, metrics, and traces
+- **How it works**: DaemonSet that uses the Kubernetes API to tail container logs and forward them to Loki
 - **Namespace**: `monitoring`
+- **Note**: Replaces promtail (which is now deprecated)
 
 ## 🚀 Getting Started
 
@@ -147,7 +148,7 @@ kubectl apply -f projects/infrastructure.yaml
 # Apply all applications
 kubectl apply -f apps/kube-prometheus-stack/application.yaml
 kubectl apply -f apps/loki/application.yaml
-kubectl apply -f apps/promtail/application.yaml
+kubectl apply -f apps/alloy/application.yaml
 ```
 
 ### Step 5: Watch ArgoCD Deploy Everything
@@ -286,11 +287,11 @@ kubectl describe pod -n monitoring <pod-name>
 
 ### Loki not receiving logs
 ```bash
-# Check Promtail is running on all nodes
-kubectl get pods -n monitoring -l app.kubernetes.io/name=promtail
+# Check Alloy is running on all nodes
+kubectl get pods -n monitoring -l app.kubernetes.io/name=alloy
 
-# Check Promtail logs
-kubectl logs -n monitoring -l app.kubernetes.io/name=promtail
+# Check Alloy logs
+kubectl logs -n monitoring -l app.kubernetes.io/name=alloy
 
 # Verify Loki is accessible
 kubectl get svc -n monitoring loki-gateway
@@ -383,6 +384,7 @@ kubectl logs -n monitoring -l app.kubernetes.io/name=grafana  # Grafana logs
 - [Prometheus Documentation](https://prometheus.io/docs/)
 - [Grafana Documentation](https://grafana.com/docs/)
 - [Loki Documentation](https://grafana.com/docs/loki/)
+- [Grafana Alloy Documentation](https://grafana.com/docs/alloy/)
 
 ## 🤝 Contributing
 
