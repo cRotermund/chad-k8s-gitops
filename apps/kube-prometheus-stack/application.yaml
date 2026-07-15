@@ -70,7 +70,7 @@ spec:
           # Enable ingress for external access
           ingress:
             enabled: true
-            ingressClassName: nginx
+            ingressClassName: traefik
             hosts:
               - grafana.local  # CHANGE THIS to your domain
             annotations:

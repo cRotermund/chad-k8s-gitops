@@ -21,7 +21,6 @@ This repository manages the shared infrastructure components for a Kubernetes cl
 ```
 chad-k8s-gitops/
 ├── apps/                          # Application definitions
-│   ├── ingress-nginx/            # Ingress controller
 │   ├── kube-prometheus-stack/    # Prometheus + Grafana monitoring
 │   ├── loki/                     # Log aggregation
 │   └── promtail/                 # Log collection agent
@@ -30,15 +29,11 @@ chad-k8s-gitops/
 └── README.md
 ```
 
+**Note**: This repository assumes your cluster already has an ingress controller deployed. K3s clusters come with Traefik pre-installed by default.
+
 ## 📦 Installed Infrastructure Components
 
-### 1. **ingress-nginx** (Traffic Routing)
-- **What it does**: Routes external HTTP/HTTPS traffic to your services
-- **Why you need it**: Without this, you can't expose services to the internet
-- **Namespace**: `ingress-nginx`
-- **Access**: External LoadBalancer (check with `kubectl get svc -n ingress-nginx`)
-
-### 2. **kube-prometheus-stack** (Monitoring)
+### 1. **kube-prometheus-stack** (Monitoring)
 - **What it does**: Collects metrics from your applications and infrastructure
 - **Components**:
   - **Prometheus**: Time-series database for metrics
@@ -50,13 +45,13 @@ chad-k8s-gitops/
 - **Grafana Access**: http://grafana.local (update in `kube-prometheus-stack/application.yaml`)
 - **Default Login**: admin/admin (⚠️ CHANGE THIS!)
 
-### 3. **Loki** (Log Aggregation)
+### 2. **Loki** (Log Aggregation)
 - **What it does**: Stores and queries logs from all your applications
 - **Why it's better than raw logs**: Centralized, searchable, and doesn't require SSH to nodes
 - **Namespace**: `monitoring`
 - **Integration**: Pre-configured as a Grafana datasource
 
-### 4. **Promtail** (Log Collection)
+### 3. **Promtail** (Log Collection)
 - **What it does**: Runs on every node and sends logs to Loki
 - **How it works**: DaemonSet that reads container logs and forwards them
 - **Namespace**: `monitoring`
@@ -64,9 +59,10 @@ chad-k8s-gitops/
 ## 🚀 Getting Started
 
 ### Prerequisites
-1. A running Kubernetes cluster
-2. `kubectl` configured to access your cluster
-3. ArgoCD installed in your cluster
+1. A running Kubernetes cluster (tested with k3s)
+2. An ingress controller (k3s includes Traefik by default)
+3. `kubectl` configured to access your cluster
+4. ArgoCD will be installed in Step 1
 
 ### Step 1: Install ArgoCD
 
@@ -149,7 +145,6 @@ EOF
 kubectl apply -f projects/infrastructure.yaml
 
 # Apply all applications
-kubectl apply -f apps/ingress-nginx/application.yaml
 kubectl apply -f apps/kube-prometheus-stack/application.yaml
 kubectl apply -f apps/loki/application.yaml
 kubectl apply -f apps/promtail/application.yaml
@@ -163,7 +158,7 @@ kubectl get applications -n argocd -w
 
 # Or use the ArgoCD CLI
 argocd app list
-argocd app get ingress-nginx
+argocd app get ...
 ```
 
 ### Step 6: Access ArgoCD UI (Optional)
@@ -289,18 +284,6 @@ kubectl logs -n monitoring <pod-name>
 kubectl describe pod -n monitoring <pod-name>
 ```
 
-### Ingress not working
-```bash
-# Check ingress controller is running
-kubectl get pods -n ingress-nginx
-
-# Check ingress resource
-kubectl get ingress -A
-
-# View ingress controller logs
-kubectl logs -n ingress-nginx -l app.kubernetes.io/name=ingress-nginx
-```
-
 ### Loki not receiving logs
 ```bash
 # Check Promtail is running on all nodes
@@ -400,7 +383,6 @@ kubectl logs -n monitoring -l app.kubernetes.io/name=grafana  # Grafana logs
 - [Prometheus Documentation](https://prometheus.io/docs/)
 - [Grafana Documentation](https://grafana.com/docs/)
 - [Loki Documentation](https://grafana.com/docs/loki/)
-- [Ingress-nginx Documentation](https://kubernetes.github.io/ingress-nginx/)
 
 ## 🤝 Contributing
 

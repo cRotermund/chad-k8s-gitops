@@ -55,7 +55,7 @@
 #   annotations:
 #     cert-manager.io/cluster-issuer: letsencrypt-prod  # If using cert-manager
 # spec:
-#   ingressClassName: nginx  # Uses our ingress-nginx
+#   ingressClassName: traefik  # Uses the cluster's Traefik ingress controller
 #   rules:
 #     - host: myapp.example.com
 #       http:
