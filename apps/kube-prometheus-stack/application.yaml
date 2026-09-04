@@ -12,7 +12,7 @@ spec:
     # Prometheus Community Helm chart - includes Prometheus, Grafana, and Alertmanager
     repoURL: https://prometheus-community.github.io/helm-charts
     chart: kube-prometheus-stack
-    targetRevision: 87.16.1
+    targetRevision: 89.2.1
     helm:
       values: |
         # Prometheus configuration

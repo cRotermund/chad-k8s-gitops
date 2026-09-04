@@ -74,7 +74,7 @@ If you haven't installed ArgoCD yet:
 kubectl create namespace argocd
 
 # Install ArgoCD
-kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+kubectl apply -n argocd --server-side --force-conflicts -f https://raw.githubusercontent.com/argoproj/argo-cd/v3.5.2/manifests/install.yaml
 
 # Wait for ArgoCD to be ready
 kubectl wait --for=condition=available --timeout=300s deployment/argocd-server -n argocd
@@ -141,15 +141,45 @@ EOF
 
 ### Step 4: Deploy the Infrastructure Project
 
+Use one of the following workflows. Do not use both for the same applications.
+
+**Recommended: app-of-apps workflow**
 ```bash
 # Apply the infrastructure project
 kubectl apply -f projects/infrastructure.yaml
 
-# Apply all applications
+# Apply the root application; it discovers every Application under apps/
+kubectl apply -f bootstrap/root-app.yaml
+```
+
+The repository is currently pinned to these stable releases:
+
+| Component | Version |
+| --- | --- |
+| Argo CD | `v3.5.2` |
+| Grafana Alloy chart | `1.12.1` (Alloy `v1.19.2`) |
+| Loki chart | `18.12.1` (Loki `v3.7.7`) |
+| kube-prometheus-stack chart | `89.2.1` (Prometheus Operator `v0.93.1`) |
+
+These versions were checked against the upstream release and Helm indexes on
+2026-09-04. Chart dependencies are intentionally resolved by the chart maintainers.
+
+ArgoCD then creates `kube-prometheus-stack`, `loki`, and `alloy` from Git. The child
+applications are intentionally in the `infrastructure` project and in the `argocd`
+namespace; their Helm workloads are deployed to `monitoring`.
+
+**Alternative: direct application workflow**
+```bash
+kubectl apply -f projects/infrastructure.yaml
 kubectl apply -f apps/kube-prometheus-stack/application.yaml
 kubectl apply -f apps/loki/application.yaml
 kubectl apply -f apps/alloy/application.yaml
 ```
+
+When using the app-of-apps workflow, do not create `alloy` separately in the ArgoCD UI.
+The UI-created object would compete with the `alloy` Application generated from Git.
+If using the UI, create only `infrastructure-root` with this repository and the `apps`
+path, or use the direct workflow and apply the checked-in child manifest.
 
 ### Step 5: Watch ArgoCD Deploy Everything
 
