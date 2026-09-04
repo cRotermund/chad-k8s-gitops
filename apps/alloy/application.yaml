@@ -12,7 +12,7 @@ spec:
     # Grafana Alloy collects logs, metrics, and traces (replaces promtail)
     repoURL: https://grafana.github.io/helm-charts
     chart: alloy
-    targetRevision: 1.10.1
+    targetRevision: 1.12.1
     helm:
       values: |
         alloy:

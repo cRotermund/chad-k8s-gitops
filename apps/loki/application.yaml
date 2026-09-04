@@ -12,11 +12,11 @@ spec:
     # Grafana Loki for log aggregation
     repoURL: https://grafana-community.github.io/helm-charts
     chart: loki
-    targetRevision: 6.55.0
+    targetRevision: 18.12.1
     helm:
       values: |
-        # Deployment mode - single binary for simplicity
-        deploymentMode: SingleBinary
+        # Monolithic mode is the current name for the former single-binary mode.
+        deploymentMode: Monolithic
         
         loki:
           auth_enabled: false
@@ -37,7 +37,7 @@ spec:
                   prefix: index_
                   period: 24h
         
-        # Single binary configuration
+        # Monolithic workload configuration
         singleBinary:
           replicas: 1
           persistence:
@@ -57,26 +57,6 @@ spec:
           enabled: true
           replicas: 1
         
-        # Disable components not needed in single binary mode
-        ingester:
-          replicas: 0
-        querier:
-          replicas: 0
-        queryFrontend:
-          replicas: 0
-        queryScheduler:
-          replicas: 0
-        distributor:
-          replicas: 0
-        compactor:
-          replicas: 0
-        indexGateway:
-          replicas: 0
-        bloomCompactor:
-          replicas: 0
-        bloomGateway:
-          replicas: 0
-        
         # Enable monitoring
         monitoring:
           serviceMonitor:
@@ -84,11 +64,6 @@ spec:
             labels:
               release: kube-prometheus-stack
           
-          selfMonitoring:
-            enabled: false
-            grafanaAgent:
-              installOperator: false
-        
         # Disable test pods
         test:
           enabled: false

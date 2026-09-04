@@ -1,37 +1,33 @@
-# ArgoCD App-of-Apps Pattern (Optional)
+# Argo CD app-of-apps bootstrap
 
-# Instead of applying each application individually, you can use the "App of Apps" pattern
-# where one root application manages all other applications.
+# Apply the project first, then apply this file once. The root application manages the
+# Application resources in apps/*; those child applications manage the Helm releases.
 
-# Uncomment and use this if you want to manage all apps from a single root application:
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: infrastructure-root
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: infrastructure
 
-# apiVersion: argoproj.io/v1alpha1
-# kind: Application
-# metadata:
-#   name: infrastructure-root
-#   namespace: argocd
-#   finalizers:
-#     - resources-finalizer.argocd.argoproj.io
-# spec:
-#   project: infrastructure
-#   
-#   source:
-#     repoURL: https://github.com/cRotermund/chad-k8s-gitops
-#     targetRevision: HEAD
-#     path: apps
-#   
-#   destination:
-#     server: https://kubernetes.default.svc
-#     namespace: argocd
-#   
-#   syncPolicy:
-#     automated:
-#       prune: true
-#       selfHeal: true
-#     syncOptions:
-#       - CreateNamespace=true
+  source:
+    repoURL: https://github.com/cRotermund/chad-k8s-gitops
+    targetRevision: HEAD
+    path: apps
+    directory:
+      recurse: true
 
-# To use this pattern:
-# 1. Uncomment the above
-# 2. Apply only this file: kubectl apply -f bootstrap/root-app.yaml
-# 3. ArgoCD will automatically discover and deploy all apps in the apps/ directory
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true
