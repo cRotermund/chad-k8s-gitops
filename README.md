@@ -139,15 +139,12 @@ stringData:
 EOF
 ```
 
-### Step 4: Deploy the Infrastructure Project
+### Step 4: Deploy the Applications
 
 Use one of the following workflows. Do not use both for the same applications.
 
 **Recommended: app-of-apps workflow**
 ```bash
-# Apply the infrastructure project
-kubectl apply -f projects/infrastructure.yaml
-
 # Apply the root application; it discovers every Application under apps/
 kubectl apply -f bootstrap/root-app.yaml
 ```
@@ -165,12 +162,11 @@ These versions were checked against the upstream release and Helm indexes on
 2026-09-04. Chart dependencies are intentionally resolved by the chart maintainers.
 
 ArgoCD then creates `kube-prometheus-stack`, `loki`, and `alloy` from Git. The child
-applications are intentionally in the `infrastructure` project and in the `argocd`
-namespace; their Helm workloads are deployed to `monitoring`.
+applications use ArgoCD's `default` project and are in the `argocd` namespace; their
+Helm workloads are deployed to `monitoring`.
 
 **Alternative: direct application workflow**
 ```bash
-kubectl apply -f projects/infrastructure.yaml
 kubectl apply -f apps/kube-prometheus-stack/application.yaml
 kubectl apply -f apps/loki/application.yaml
 kubectl apply -f apps/alloy/application.yaml

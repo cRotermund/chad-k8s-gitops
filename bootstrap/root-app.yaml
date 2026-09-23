@@ -11,7 +11,7 @@ metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
-  project: infrastructure
+  project: default
 
   source:
     repoURL: https://github.com/cRotermund/chad-k8s-gitops
