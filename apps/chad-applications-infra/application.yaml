@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: chad-applications-infra
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: chad-applications-infra
+    app.kubernetes.io/part-of: platform
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/cRotermund/chad-k8s-gitops.git
+    targetRevision: master
+    path: apps/chad-applications-infra
+    directory:
+      recurse: false
+      exclude: '{application.yaml,README.md}'
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: chad-applications
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
