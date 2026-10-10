@@ -1,0 +1,59 @@
+installCRDs: true
+
+crds:
+  createClusterExternalSecret: false
+  createClusterGenerator: false
+  createClusterPushSecret: false
+  createClusterSecretStore: true
+  createPushSecret: false
+
+leaderElect: false
+processClusterExternalSecret: false
+processClusterGenerator: false
+processClusterPushSecret: false
+processClusterStore: true
+processPushSecret: false
+
+serviceAccount:
+  create: true
+  name: external-secrets
+  # The controller needs its Kubernetes API token to reconcile ESO resources.
+  # This is separate from the AWS web-identity token requested for eso-aws-auth.
+  automount: true
+
+rbac:
+  create: true
+  aggregateToEdit: false
+  aggregateToView: false
+  servicebindings:
+    create: false
+
+resources:
+  requests:
+    cpu: 10m
+    memory: 32Mi
+  limits:
+    cpu: 100m
+    memory: 128Mi
+
+webhook:
+  serviceAccount:
+    automount: true
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+certController:
+  serviceAccount:
+    automount: true
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
