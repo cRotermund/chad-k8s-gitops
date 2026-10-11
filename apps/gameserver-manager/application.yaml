@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: gameserver-manager
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: gameserver-manager
+    app.kubernetes.io/part-of: applications
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/cRotermund/gameserver-manager.git
+    targetRevision: main
+    path: infra/k8s/prod
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: chad-applications
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
