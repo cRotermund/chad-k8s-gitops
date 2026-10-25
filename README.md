@@ -79,3 +79,7 @@ Validate YAML syntax and Kubernetes resources locally before opening a pull requ
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the change workflow and pull request checklist. Repository-specific agent guidance is in [AGENTS.md](AGENTS.md).
+
+## Design Documents
+
+- [External Secrets with AWS Parameter Store](docs/external-secrets-aws-oidc-design.md)
