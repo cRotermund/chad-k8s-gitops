@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: paprika-mcp-go
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: paprika-mcp-go
+    app.kubernetes.io/part-of: applications
+spec:
+  project: default
+  sources:
+    - repoURL: https://github.com/cRotermund/paprika-mcp-go.git
+      targetRevision: main
+      path: infra/k8s/prod
+    - repoURL: https://github.com/cRotermund/chad-k8s-gitops.git
+      targetRevision: master
+      path: apps/paprika-mcp-go
+      directory:
+        recurse: false
+        exclude: '{application.yaml,README.md}'
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: chad-applications
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true

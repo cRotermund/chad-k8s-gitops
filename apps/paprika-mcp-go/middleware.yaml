@@ -1,0 +1,17 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: paprika-mcp-go-strip-prefix
+  namespace: chad-applications
+  labels:
+    app.kubernetes.io/name: paprika-mcp-go
+    app.kubernetes.io/part-of: applications
+  annotations:
+    # Traefik is bundled with K3s; skip the dry run if its CRDs are not
+    # registered yet.
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  # The service only serves /mcp, so /paprika/mcp is forwarded as /mcp.
+  stripPrefix:
+    prefixes:
+      - /paprika
