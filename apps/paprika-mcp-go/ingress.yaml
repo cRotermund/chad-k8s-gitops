@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: paprika-mcp-go
+  namespace: chad-applications
+  labels:
+    app.kubernetes.io/name: paprika-mcp-go
+    app.kubernetes.io/part-of: applications
+  annotations:
+    # <namespace>-<middleware name>@kubernetescrd
+    traefik.ingress.kubernetes.io/router.middlewares: chad-applications-paprika-mcp-go-strip-prefix@kubernetescrd
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: apis.rotorlabs.io
+      http:
+        paths:
+          - path: /paprika/mcp
+            pathType: Exact
+            backend:
+              service:
+                name: paprika-mcp-go
+                port:
+                  number: 8080
